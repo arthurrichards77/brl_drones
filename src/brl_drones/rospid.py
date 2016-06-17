@@ -1,5 +1,7 @@
 import rospy
+import tf
 from std_msgs.msg import Float32
+from geometry_msgs.msg import Twist
 
 def saturate2(inp,lolimit,hilimit):
   # limit quantity to [lolimit,hilimit]
@@ -154,3 +156,57 @@ class Rospid:
 
   def read_integrator(self):
     return(self.integ)
+
+class Quadpid:
+
+  def __init__(self, tf_meas_frame, tf_targ_frame, ctrl_topic='cmd_vel'):
+    # frame names
+    self.tf_meas_frame = tf_meas_frame
+    self.tf_targ_frame = tf_targ_frame
+    # and the listener
+    self.listener = tf.TransformListener()
+    self.tf_ok = False
+    # channels
+    self.channel_names = ['pitch','roll','yaw','height']
+    # four independent PID channels
+    self.pids = [Rospid(0.0, 0.0, 0.0, '~'+ch) for ch in self.channel_names]
+    # default reference values always zero
+    self.refs = [0.0, 0.0, 0.0, 0.0]
+    # prepare output channel - override for different formats
+    self.setup_output(ctrl_topic)
+
+  def setup_output(self,ctrl_topic):
+    self.twist_pub = rospy.Publisher(ctrl_topic, Twist)
+
+  def update(self,t):
+    # derive errors somehow - override this for different approaches
+    self.calcRefsAndMeas()
+    if self.tf_ok:
+      # now update each of the channel PIDs
+      self.ctrls = [self.pids[ii].update(self.meas[ii], self.refs[ii], t) for ii in range(4)]
+      # and finally transmit the output - again, override for different quads
+      self.pub_output()
+
+  def calcRefsAndMeas(self):
+    # flag in case of problems
+    self.tf_ok = False
+    # grab the transform
+    try:
+      [trans,rot] = self.listener.lookupTransform(self.tf_meas_frame, self.tf_targ_frame, rospy.Time(0))
+      #print trans
+      #print rot
+      self.meas = [-trans[0], -trans[1], -rot[2], -trans[2]]
+      rospy.loginfo('Measurement PRYZ relative to target is [%f %f %f %f]',-trans[0], -trans[1], -rot[2], -trans[2])
+      self.tf_ok = True
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+      pass
+
+  def pub_output(self):
+    # convert to a twist and transmit
+    op = Twist()
+    op.linear.x = self.ctrls[0]
+    op.linear.y = self.ctrls[1]
+    op.angular.z = self.ctrls[2]
+    op.linear.z = self.ctrls[3]
+    self.twist_pub.publish(op)
+

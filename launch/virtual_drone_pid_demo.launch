@@ -1,0 +1,27 @@
+<launch>
+
+    <include file="$(find brl_drones)/launch/mylaunch_2.launch">
+      <arg name="panels" value="True" />
+    </include>
+      
+    <node pkg="brl_drones" name="control" type="pid_virtual_drone_test.py">
+      <param name="pitch/init_gains/kp" type="double" value="0.3" />
+      <param name="pitch/init_gains/ki" type="double" value="0.0" />
+      <param name="pitch/init_gains/kd" type="double" value="0.0" />
+      <param name="roll/init_gains/kp" type="double" value="0.3" />
+      <param name="roll/init_gains/ki" type="double" value="0.0" />
+      <param name="roll/init_gains/kd" type="double" value="0.0" />
+      <param name="yaw/init_gains/kp" type="double" value="0.6" />
+      <param name="yaw/init_gains/ki" type="double" value="0.0" />
+      <param name="yaw/init_gains/kd" type="double" value="0.0" />
+      <param name="height/init_gains/kp" type="double" value="0.3" />
+      <param name="height/init_gains/ki" type="double" value="0.0" />
+      <param name="height/init_gains/kd" type="double" value="0.0" />
+    </node>
+
+    <node pkg="brl_drones" name="tuning" type="pid_tune_gui.py" ns="control/pitch" />
+    <node pkg="brl_drones" name="tuning" type="pid_tune_gui.py" ns="control/roll" />
+    <node pkg="brl_drones" name="tuning" type="pid_tune_gui.py" ns="control/yaw" />
+    <node pkg="brl_drones" name="tuning" type="pid_tune_gui.py" ns="control/height" />
+
+</launch>
