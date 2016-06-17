@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="drone_base" params="prefix base_link_name">
+
+    <link name="${prefix}x" />
+
+    <link name="${prefix}xy" />
+
+    <link name="${prefix}xyz" />
+
+    <link name="${prefix}hull">
+      <visual>
+        <geometry>
+          <box size="0.5 0.5 0.05"/>
+        </geometry>
+        <origin xyz="0 0 0.1"/>
+        <material name="${prefix}hull_color">
+          <color rgba="0.5 0.5 0.5 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.5 0.5 0.2"/>
+        </geometry>
+        <origin xyz="0 0 0.1"/>
+      </collision>
+    </link>
+
+    <joint name="${prefix}move_x" type="prismatic" >
+      <parent link="${base_link_name}" />
+      <child link="${prefix}x" />
+      <axis xyz="1 0 0" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}move_y" type="prismatic" >
+      <parent link="${prefix}x" />
+      <child link="${prefix}xy" />
+      <axis xyz="0 1 0" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}move_z" type="prismatic" >
+      <parent link="${prefix}xy" />
+      <child link="${prefix}xyz" />
+      <axis xyz="0 0 1" />
+      <limit lower="0" upper="2" effort="100" velocity="100" />
+    </joint>
+
+    <joint name="${prefix}turn_z" type="revolute" >
+      <parent link="${prefix}xyz" />
+      <child link="${prefix}hull" />
+      <axis xyz="0 0 1" />
+      <limit lower="-3.141" upper="3.141" effort="100" velocity="100" />
+    </joint>  
+
+  <link name="${prefix}fr_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="0.125 0.125 0.1"/>
+      <material name="${prefix}front_rotor_color">
+        <color rgba="0.8 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="${prefix}fr_rotor_joint" type="fixed">
+    <parent link="${prefix}hull"/>
+    <child link="${prefix}fr_rotor"/>
+  </joint>      
+
+  <link name="${prefix}fl_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="0.125 -0.125 0.1"/>
+      <material name="${prefix}front_rotor_color"/>
+    </visual>
+  </link>
+  <joint name="${prefix}fl_rotor_joint" type="fixed">
+    <parent link="${prefix}hull"/>
+    <child link="${prefix}fl_rotor"/>
+  </joint>      
+
+  <link name="${prefix}br_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="-0.125 0.125 0.1"/>
+      <material name="${prefix}back_rotor_color">
+        <color rgba="0.4 0.4 0.4 1"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="${prefix}br_rotor_joint" type="fixed">
+    <parent link="${prefix}hull"/>
+    <child link="${prefix}br_rotor"/>
+  </joint>      
+
+  <link name="${prefix}bl_rotor">
+    <visual>
+      <geometry>
+        <cylinder radius="0.12" length="0.06"/>
+      </geometry>
+      <origin xyz="-0.125 -0.125 0.1"/>
+      <material name="${prefix}back_rotor_color"/>
+    </visual>
+  </link>
+  <joint name="${prefix}bl_rotor_joint" type="fixed">
+    <parent link="${prefix}hull"/>
+    <child link="${prefix}bl_rotor"/>
+  </joint>      
+
+  </xacro:macro>
+
+</robot>
