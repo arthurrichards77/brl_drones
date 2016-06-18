@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('aapacs_drones')
+roslib.load_manifest('brl_drones')
 import sys
 import rospy
 import tf
@@ -175,7 +175,7 @@ sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
 sub_ref_traj = rospy.Subscriber('/cmd_traj', JointTrajectory, trajCallback)
 #sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
 #pub_ref_tf = tf.TransformBroadcaster()
-pub_joint_states = rospy.Publisher('joint_states', JointState)
+pub_joint_states = rospy.Publisher('joint_states', JointState, queue_size=10)
 
 # use drone name parameter as prefix to joint names
 if rospy.has_param('drone_name'):

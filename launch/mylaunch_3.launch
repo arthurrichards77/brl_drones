@@ -15,7 +15,7 @@
   </node>
 
 
-<param name="robot_description" command="$(find xacro)/xacro.py /home/aeagr/catkin_ws/src/brl_drones/urdf/myurdf_3.urdf.xacro" />
+<param name="robot_description" command="$(find xacro)/xacro.py $(find brl_drones)/urdf/myurdf_3.urdf.xacro" />
 
   <include file="$(find brl_drones)/launch/single_virtual.launch">
     <arg name="drone_name" value="drone1" />

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('aapacs_drones')
+roslib.load_manifest('brl_drones')
 import rospy
 from trajectory_msgs.msg import JointTrajectory,JointTrajectoryPoint
 import csv
@@ -15,7 +15,7 @@ class TrajGui:
     frame.pack()
     self.my_frame = frame
     self.traj = None
-    self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory)
+    self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory, queue_size=10)
     self.repeat_traj = False
 
     # initial directory to look for files

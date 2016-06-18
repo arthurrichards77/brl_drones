@@ -2,7 +2,7 @@
 from Tkinter import *
 
 import roslib
-roslib.load_manifest('aapacs_drones')
+roslib.load_manifest('brl_drones')
 import sys
 import rospy
 from geometry_msgs.msg import Twist
