@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import roslib
 roslib.load_manifest('brl_drones')
 import sys
@@ -173,6 +172,7 @@ def reftfCallback(data):
 rospy.init_node('virtual_drone', anonymous=True)
 sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
 sub_ref_traj = rospy.Subscriber('/cmd_traj', JointTrajectory, trajCallback)
+sub_ref_traj = rospy.Subscriber('cmd_traj', JointTrajectory, trajCallback)
 #sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
 #pub_ref_tf = tf.TransformBroadcaster()
 pub_joint_states = rospy.Publisher('joint_states', JointState, queue_size=10)
