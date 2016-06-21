@@ -1,9 +1,16 @@
-<launch>	
+<launch>
 
   <arg name="panels" default="false" />
 
   <param name="default_trajectory_folder"  value="$(find brl_drones)/launch" />
-  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" />
+  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" >
+    <remap from="cmd_traj" to="bundled_traj" />
+  </node>
+
+  <node name="trajectory_publisher" pkg="brl_drones" type="trajectory_publisher.py" >
+      <rosparam param="sink_topics">['drone1/cmd_traj', 'drone2/cmd_traj', 'drone3/cmd_traj']</rosparam>
+      <param name="source_topic" value="bundled_traj" />
+  </node>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
@@ -15,7 +22,7 @@
   </node>
 
 
-<param name="robot_description" command="$(find xacro)/xacro.py $(find brl_drones)/urdf/myurdf_3.urdf.xacro" />
+<param name="robot_description" command="$(find xacro)/xacro.py /Users/rob/Desktop/fndws/src/brl_drones/urdf/myurdf_3.urdf.xacro" />
 
   <include file="$(find brl_drones)/launch/single_virtual.launch">
     <arg name="drone_name" value="drone1" />

@@ -46,12 +46,21 @@ f = open(launch_file_name,'w')
 
 joint_state_list = [("%s/joint_states" % drone) for drone in drone_names]
 
-preamble="""<launch>	
+traj_sink_list = [("%s/cmd_traj" % drone) for drone in drone_names]
+
+preamble="""<launch>
 
   <arg name="panels" default="false" />
 
   <param name="default_trajectory_folder"  value="$(find brl_drones)/launch" />
-  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" />
+  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" >
+    <remap from="cmd_traj" to="bundled_traj" />
+  </node>
+
+  <node name="trajectory_publisher" pkg="brl_drones" type="trajectory_publisher.py" >
+      <rosparam param="sink_topics">{0}</rosparam>
+      <param name="source_topic" value="bundled_traj" />
+  </node>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
@@ -59,11 +68,11 @@ preamble="""<launch>
 
   <param name="use_gui" value="false"/>
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">%s</rosparam>
+    <rosparam param="source_list">{1}</rosparam>
   </node>
 
 
-""" % joint_state_list
+""".format(traj_sink_list,joint_state_list)
 
 f.write(preamble)
 
