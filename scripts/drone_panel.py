@@ -98,20 +98,42 @@ vel_pub.publish(self.yaw_l))
     self.rst = Button(frame, text='Reset', bg="blue", fg="white", command=lambda: self.reset_pub.publish(Empty()))
     self.rst.grid(row=4, column=1, padx=10, pady=10)
 
+    # external control
+    self.auto_var = IntVar()
+    self.aut = Checkbutton(frame, text="External", variable=self.auto_var)
+    self.aut.grid(row=3, column=4, padx=10, pady=10)
+
+    # repeaters for external input
+    self.ext_x = Entry(frame)
+    self.ext_x.insert(0,"External")
+    self.ext_x.grid(row=4,column=4)
+
     self.msg_pub = rospy.Publisher('monitor/status_msg',String)
     self.vel_pub = rospy.Publisher('cmd_vel',Twist)
     self.land_pub = rospy.Publisher('ardrone/land', Empty)
     self.reset_pub = rospy.Publisher('ardrone/reset', Empty)
     self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty)
 
+    self.ext_sub = rospy.Subscriber('ext_vel', Twist, self.ext_callback)
+
+  def ext_callback(self,data):
+    self.ext_x.delete(0,END)
+    self.ext_x.insert(0,"%.2f %.2f %.2f %.2f" % (data.linear.x,data.linear.y,data.linear.z,data.angular.z))
+    if self.auto_var.get()==1:
+      self.vel_pub.publish(data)
+
   def stop_btn(self):
     rospy.loginfo("Stop button pressed")
     # send zero velocity
     self.vel_pub.publish(Twist())
+    self.stop_auto()
 
   def say_hi(self):
     rospy.loginfo("Hello")
     self.msg_pub.publish("Hello from control panel")
+
+  def stop_auto(self):
+    self.aut.deselect()
 
   def check_ros(self):
     if rospy.is_shutdown():
