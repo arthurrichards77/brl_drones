@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 import roslib
 roslib.load_manifest('brl_drones')
 import sys
@@ -63,11 +64,11 @@ def trajUpdate():
   time_since_traj_sent = rospy.Time.now() - ref_traj_start_time
   if time_since_traj_sent < ref_traj.points[0].time_from_start:
     # not started yet - nothing to do
-    rospy.loginfo("Waiting for trajectory to start")    
+    rospy.loginfo("Waiting for trajectory to start")
   elif time_since_traj_sent > ref_traj.points[-1].time_from_start:
     # finished - also nothing to do
     rospy.loginfo("Finished trajectory")
-    ref_velocity = Twist()  
+    ref_velocity = Twist()
     movement_mode = 'velocity'
   else:
     # find which time segment I am in
@@ -93,7 +94,7 @@ def trajUpdate():
     yawAngle = atan2(s_now,c_now)
   # send back the new joints
   return(x,y,z,yawAngle)
-  
+
 
 def velUpdate():
   # update for reference in velocity mode
@@ -171,16 +172,16 @@ def reftfCallback(data):
 
 rospy.init_node('virtual_drone', anonymous=True)
 sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
-sub_ref_traj = rospy.Subscriber('/cmd_traj', JointTrajectory, trajCallback)
 sub_ref_traj = rospy.Subscriber('cmd_traj', JointTrajectory, trajCallback)
-#sub_ref_pos = rospy.Subscriber('cmd_tf', TransformStamped, reftfCallback)
-#pub_ref_tf = tf.TransformBroadcaster()
+
 pub_joint_states = rospy.Publisher('joint_states', JointState, queue_size=10)
 
 # use drone name parameter as prefix to joint names
 if rospy.has_param('drone_name'):
   drone_name = rospy.get_param('drone_name')
   my_joint_names=[drone_name + "_" + joint_name for joint_name in my_joint_names]
+else:
+  my_joint_names=["move_x","move_y","move_z","turn_z"]
 js_msg.name=my_joint_names
 
 # and for reference position

@@ -20,7 +20,7 @@ import rospy
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 
-rospy.init_node('trajectory_muxer')
+rospy.init_node('trajectory_demuxer')
 
 namePublisherPairs = [];
 
@@ -47,32 +47,33 @@ def extractDataForName(name,data):
 def publishToTargets(data):
 	global namePublisherPairs
 	for npPair in namePublisherPairs :
-		outData = extractDataForName(npPair.name,data)
-		npPair.publisher.publish(outData)
+		outData = extractDataForName(npPair['name'],data)
+		npPair['publisher'].publish(outData)
 
 # Check for presence of required parameters
-if !rospy.has_param('~destination_topics'):
+if not rospy.has_param('~destination_topics'):
 	rospy.logfatal('destination_topics not specified')
 
-if !rospy.has_param('~source_topic'):
+if not rospy.has_param('~source_topic'):
 	rospy.logfatal('source_topic not specified')
 
-if !rospy.has_param('~joint_names'):
+if not rospy.has_param('~joint_names'):
 	inJointNames = ["move_x","move_y","move_z","turn_z"]
 else:
 	jointNames = rospy.get_param('~joint_names')
 
-if !rospy.has_param('~output_joint_names'):
+if not rospy.has_param('~output_joint_names'):
 	outJointNames = inJointNames
 else:
 	outJointNames = rospy.get_param('~output_joint_names')
 
 # Get a list of drone names and topics to sink to
-for name,topic in rospy.get_param('~destination_topics'):
+dest_topics = rospy.get_param('~destination_topics')
+for name in dest_topics:
 	# For each pair, append a {name:,publisher:} dictionary to namePublisherPairs
 	namePublisherPairs.append( {
-		name      : name,
-		publisher : rospy.Publisher(topic, JointTrajectory, queue_size=10)
+		'name'      : name,
+		'publisher' : rospy.Publisher(dest_topics[name], JointTrajectory, queue_size=10)
 		} )
 
 rospy.Subscriber( rospy.get_param('~source_topic'), JointTrajectory, publishToTargets)

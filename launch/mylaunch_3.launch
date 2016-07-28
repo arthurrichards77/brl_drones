@@ -7,22 +7,21 @@
     <remap from="cmd_traj" to="bundled_traj" />
   </node>
 
-  <node name="trajectory_publisher" pkg="brl_drones" type="trajectory_publisher.py" >
-      <rosparam param="sink_topics">['drone1/cmd_traj', 'drone2/cmd_traj', 'drone3/cmd_traj']</rosparam>
-      <param name="source_topic" value="bundled_traj" />
+  <node name="trajectory_demuxer" pkg="brl_drones" type="trajectory_demuxer.py">
+    <param name="source_topic" value="bundled_traj" />
+    <rosparam param="destination_topics">{'drone1': 'drone1/cmd_traj', 'drone2': 'drone2/cmd_traj', 'drone3': 'drone3/cmd_traj'}</rosparam>
+  </node>
+
+    <param name="robot_description" command="$(find xacro)/xacro.py /Users/rob/Desktop/fndws/src/brl_drones/urdf/myurdf_3.urdf.xacro" />
+
+  <node name="trajectory_muxer" pkg="brl_drones" type="trajectory_muxer.py">
+    <rosparam param="source_topics">{'drone1': 'drone1/joint_states', 'drone2': 'drone2/joint_states', 'drone3': 'drone3/joint_states'}</rosparam>
+    <param name="destination_topic" value="joint_states" />
   </node>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find brl_drones)/urdf/drones.rviz"/>
-
-  <param name="use_gui" value="false"/>
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">['drone1/joint_states', 'drone2/joint_states', 'drone3/joint_states']</rosparam>
-  </node>
-
-
-<param name="robot_description" command="$(find xacro)/xacro.py /Users/rob/Desktop/fndws/src/brl_drones/urdf/myurdf_3.urdf.xacro" />
 
   <include file="$(find brl_drones)/launch/single_virtual.launch">
     <arg name="drone_name" value="drone1" />
