@@ -40,6 +40,7 @@ def extractDataForName(name,data):
 		for index in positionIdxs :
 			outPoint.positions.append(point.positions[index])
 
+		outPoint.time_from_start = point.time_from_start
 		outData.points.append(outPoint)
 
 	return outData
