@@ -44,35 +44,35 @@ launch_file_name = rospy.get_param('launch_file')
 print "Preparing to write LAUNCH file: %s" % launch_file_name
 f = open(launch_file_name,'w')
 
-joint_state_list = [("%s/joint_states" % drone) for drone in drone_names]
-
-traj_sink_list = [("%s/cmd_traj" % drone) for drone in drone_names]
+joint_state_source_list = {}
+traj_destination_list = {}
+for drone in drone_names:
+    joint_state_source_list[drone] = "%s/joint_states" % drone 
+    traj_destination_list[drone] = "%s/cmd_traj" % drone
 
 preamble="""<launch>
 
   <arg name="panels" default="false" />
 
   <param name="default_trajectory_folder"  value="$(find brl_drones)/launch" />
-  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" >
-    <remap from="cmd_traj" to="bundled_traj" />
-  </node>
+  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" />
 
-  <node name="trajectory_publisher" pkg="brl_drones" type="trajectory_publisher.py" >
-      <rosparam param="sink_topics">{0}</rosparam>
-      <param name="source_topic" value="bundled_traj" />
+  <node name="trajectory_demuxer" pkg="brl_drones" type="trajectory_demuxer.py">
+    <param name="source_topic" value="cmd_traj" />
+    <rosparam param="destination_topics">{0}</rosparam>
   </node>
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find brl_drones)/urdf/drones.rviz"/>
 
-  <param name="use_gui" value="false"/>
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <rosparam param="source_list">{1}</rosparam>
+  <node name="trajectory_muxer" pkg="brl_drones" type="trajectory_muxer.py">
+    <rosparam param="source_topics">{1}</rosparam>
+    <param name="destination_topic" value="joint_states" />
   </node>
 
 
-""".format(traj_sink_list,joint_state_list)
+""".format(traj_destination_list,joint_state_source_list)
 
 f.write(preamble)
 
