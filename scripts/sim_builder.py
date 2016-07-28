@@ -47,7 +47,7 @@ f = open(launch_file_name,'w')
 joint_state_source_list = {}
 traj_destination_list = {}
 for drone in drone_names:
-    joint_state_source_list[drone] = "%s/joint_states" % drone 
+    joint_state_source_list[drone] = "%s/joint_states" % drone
     traj_destination_list[drone] = "%s/cmd_traj" % drone
 
 preamble="""<launch>
@@ -66,17 +66,17 @@ preamble="""<launch>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find brl_drones)/urdf/drones.rviz"/>
 
+  <param name="robot_description" command="$(find xacro)/xacro.py {1}" />
+
   <node name="trajectory_muxer" pkg="brl_drones" type="trajectory_muxer.py">
-    <rosparam param="source_topics">{1}</rosparam>
+    <rosparam param="source_topics">{2}</rosparam>
     <param name="destination_topic" value="joint_states" />
   </node>
 
 
-""".format(traj_destination_list,joint_state_source_list)
+""".format(traj_destination_list,urdf_file_name,joint_state_source_list)
 
 f.write(preamble)
-
-f.write("<param name=\"robot_description\" command=\"$(find xacro)/xacro.py %s\" />\n\n" % urdf_file_name)
 
 for drone in drone_names:
   f.write("""  <include file="$(find brl_drones)/launch/single_virtual.launch">
