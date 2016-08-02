@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('aapacs_drones')
+roslib.load_manifest('brl_drones')
 import sys
 import rospy
 import tf

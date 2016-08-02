@@ -2,7 +2,7 @@
 from Tkinter import *
 
 import roslib
-roslib.load_manifest('rospid')
+roslib.load_manifest('brl_drones')
 import rospy
 from std_msgs.msg import Float32
 

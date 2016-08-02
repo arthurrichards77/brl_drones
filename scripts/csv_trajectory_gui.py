@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import roslib
-roslib.load_manifest('aapacs_drones')
+roslib.load_manifest('brl_drones')
 import rospy
 from trajectory_msgs.msg import JointTrajectory,JointTrajectoryPoint
 import csv
