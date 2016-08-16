@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 import roslib
 roslib.load_manifest('brl_drones')
 import sys
@@ -172,7 +172,11 @@ def reftfCallback(data):
 
 rospy.init_node('virtual_drone', anonymous=True)
 sub_ref_vel = rospy.Subscriber('cmd_vel', Twist, refVelCallback)
-sub_ref_traj = rospy.Subscriber('cmd_traj', JointTrajectory, trajCallback)
+
+traj_topic = 'cmd_traj'
+if rospy.has_param('drone_name'): # With drone_name set, will subscribe to global /cmd_traj topic
+    traj_topic = '/cmd_traj'
+sub_ref_traj = rospy.Subscriber(traj_topic, JointTrajectory, trajCallback)
 
 pub_joint_states = rospy.Publisher('joint_states', JointState, queue_size=10)
 
@@ -180,8 +184,6 @@ pub_joint_states = rospy.Publisher('joint_states', JointState, queue_size=10)
 if rospy.has_param('drone_name'):
   drone_name = rospy.get_param('drone_name')
   my_joint_names=[drone_name + "_" + joint_name for joint_name in my_joint_names]
-else:
-  my_joint_names=["move_x","move_y","move_z","turn_z"]
 js_msg.name=my_joint_names
 
 # and for reference position
