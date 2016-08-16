@@ -1,16 +1,22 @@
-#!/usr/local/bin/env python
+#!/usr/bin/env python
 #
 # trajectory_muxer.py
 # Combines a set of JointState messages for each drone into a consolidated
 #  JointState message containing information for multiple drones like JointStatePublisher
 # Takes a parameter in YAML form for the source topics:
+#
 #  <rosparam param="source_topics">{'drone1': 'drone1/joint_states', 'drone2': 'drone2/joint_states', 'drone3': 'drone3/joint_states'}</rosparam>
+#
 # And a standard ros parameter for the destination topic:
+#
 #  <param name="destination_topic" value="joint_states" />
+#
 # Expects that the source topics will publish a JointTrajectory message containing
 #  all joint names. By default joint names are: ["move_x","move_y","move_z","turn_z"]
 #  The parameter ~joint_names can be set to override this:
+#
 #  <rosparam param="joint_names">[ 'xPos', 'yPos', 'zPos', 'heading']</rosparam>
+#
 # The output will be a single message with the names derived from the URDF file set
 #  in the parameter robot_description as for JointStatePublisher
 #
