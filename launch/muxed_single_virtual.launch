@@ -5,8 +5,6 @@
 
   <group ns="$(arg drone_name)">
 
-    <param name="drone_name" value="$(arg drone_name)"/>
-
     <node name="targetsim" pkg="brl_drones" type="virtual_drone.py" />
 
     <node if="$(arg use_panel)" name="controlpanel" pkg="brl_drones" type="drone_panel.py" />
