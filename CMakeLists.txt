@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tf
   trajectory_msgs
+  turtlesim
   urdf
   urdf_tutorial
   xacro
