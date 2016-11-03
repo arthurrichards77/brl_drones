@@ -94,22 +94,23 @@ class Rospid:
       # find time since last update
       delta_t = t - self.last_t
 
-      # print t, self.last_t, delta_t
+      # rest only makes sense if time has elapsed
+      if delta_t>0:
 
-      # optional integrator update
-      if not self.freeze_integrator_flag:
+        # optional integrator update
+        if not self.freeze_integrator_flag:
 
-        # add to integrator using trapezium rule
-        self.integ = self.integ + self.ki*0.5*delta_t*(self.last_e + r-y)
+          # add to integrator using trapezium rule
+          self.integ = self.integ + self.ki*0.5*delta_t*(self.last_e + r-y)
 
-      # add integral term to control
-      u = u + self.integ        
+        # add integral term to control
+        u = u + self.integ        
 
-      # find derivatives using finite difference
-      dydt = (y - self.last_y)/delta_t
+        # find derivatives using finite difference
+        dydt = (y - self.last_y)/delta_t
 
-      # add to control - note negative
-      u = u - self.kd*dydt
+        # add to control - note negative
+        u = u - self.kd*dydt
 
     # stores for future use
     self.last_e = r-y

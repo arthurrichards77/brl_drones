@@ -18,6 +18,7 @@ def pose_callback(data):
   # calculate radius
   radius = sqrt(dx*dx + dy*dy)
   # PID control for constant radius
+  rospy.loginfo('Time is %f',rospy.get_rostime().to_sec())
   u = steering_pid.update(radius, 2.5, rospy.get_rostime().to_sec())
   # saturate
   u = brl_drones.rospid.saturate(u,0.3)
