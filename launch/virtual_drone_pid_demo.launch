@@ -4,7 +4,7 @@
       <arg name="panels" value="True" />
     </include>
       
-    <node pkg="brl_drones" name="control" type="pid_virtual_drone_test.py">
+    <node pkg="brl_drones" name="control" type="drone_tf_follow.py">
       <param name="pitch/init_gains/kp" type="double" value="0.3" />
       <param name="pitch/init_gains/ki" type="double" value="0.0" />
       <param name="pitch/init_gains/kd" type="double" value="0.0" />
@@ -17,6 +17,7 @@
       <param name="height/init_gains/kp" type="double" value="0.3" />
       <param name="height/init_gains/ki" type="double" value="0.0" />
       <param name="height/init_gains/kd" type="double" value="0.0" />
+      <remap from="ctrl_vel" to="/drone2/ext_vel" />
     </node>
 
     <node pkg="brl_drones" name="tuning" type="pid_tune_gui.py" ns="control/pitch" />

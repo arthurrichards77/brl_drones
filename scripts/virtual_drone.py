@@ -111,6 +111,7 @@ def velUpdate():
   # return the new joint states
   return (x,y,z,yawAngle)
 
+
 def refUpdate():
   # need to explicitly ref global as I'm writing to it
   global ref_transform

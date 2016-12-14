@@ -97,6 +97,11 @@ class DronePanel:
     self.ext_x.insert(0,"External")
     self.ext_x.grid(row=4,column=4, padx=10, pady=10)
 
+    # mode status message
+    self.mode_msg = Entry(self.my_frame)
+    self.mode_msg.insert(0,"Mode")
+    self.mode_msg.grid(row=2,column=4, padx=10, pady=10)
+
   def takeoff_callback(self):
     self.takeoff_pub.publish(Empty())
 

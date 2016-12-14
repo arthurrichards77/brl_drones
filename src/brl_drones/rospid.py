@@ -23,7 +23,7 @@ def saturate(inp,limit):
 
 class Rospid:
 
-  def __init__(self, kp, ki, kd, namespace):
+  def __init__(self, kp, ki, kd, namespace, lower_lim=-1.0, upper_lim=1.0):
     # constructor
     # namespace is location for tuning parameters
 
@@ -33,6 +33,9 @@ class Rospid:
 
     # store default gains
     self.init_gains(kp, ki, kd)
+
+    # store limits
+    self.init_limits(lower_lim, upper_lim)
 
     # stores for last input values for differentiating
     self.last_t = 0.0
@@ -50,6 +53,9 @@ class Rospid:
     self.sub_kp = rospy.Subscriber(self.namespace + "/tune_gains/kp", Float32, self.tune_kp_callback)
     self.sub_ki = rospy.Subscriber(self.namespace + "/tune_gains/ki", Float32, self.tune_ki_callback)
     self.sub_kd = rospy.Subscriber(self.namespace + "/tune_gains/kd", Float32, self.tune_kd_callback)
+    self.sub_reset = rospy.Subscriber(self.namespace + "/reset_integrator", Float32, self.reset_int_callback)
+    self.sub_upper = rospy.Subscriber(self.namespace + "/set_limits/upper", Float32, self.upper_lim_callback)
+    self.sub_lower = rospy.Subscriber(self.namespace + "/set_limits/lower", Float32, self.lower_lim_callback)
     
     # closing message
     rospy.loginfo('PID ready in %s', self.namespace)
@@ -81,6 +87,27 @@ class Rospid:
     if gain_override_flag:
       rospy.logwarn('PID %s got gains from parameters kp=%f, ki=%f, kd=%f', self.namespace, self.kp, self.ki, self.kd)
 
+  def init_limits(self, lower_lim, upper_lim):
+    # initialize gains from various sources
+
+    # just start by using given ones
+    self.upper_lim = upper_lim
+    self.lower_lim = lower_lim
+    rospy.loginfo('PID %s given limits [%f,%f]', self.namespace, self.lower_lim, self.upper_lim)
+
+    # check for parameter overrides
+    limit_override_flag=False
+    if rospy.has_param(self.namespace + "/init_limits/upper"):
+      self.upper_lim = rospy.get_param(self.namespace + "/init_limits/upper")
+      limit_override_flag=True
+    if rospy.has_param(self.namespace + "/init_limits/lower"):
+      self.lower_lim = rospy.get_param(self.namespace + "/init_limits/lower")
+      limit_override_flag=True
+    # report override
+    if limit_override_flag:
+      rospy.logwarn('PID %s got limits from parameters [%f,%f]', self.namespace, self.lower_lim, self.upper_lim)
+    assert(self.upper_lim>self.lower_lim)
+
   def update(self, y, r, t):
     # return new output given new inputs
     # y is measurement; r is reference; t is time
@@ -103,6 +130,9 @@ class Rospid:
           # add to integrator using trapezium rule
           self.integ = self.integ + self.ki*0.5*delta_t*(self.last_e + r-y)
 
+	  # saturate
+          self.integ = saturate2(self.integ,self.lower_lim,self.upper_lim)
+
         # add integral term to control
         u = u + self.integ        
 
@@ -117,6 +147,9 @@ class Rospid:
     self.last_y = y
     self.last_t = t
     self.has_run = True
+
+    # saturate
+    u = saturate2(u,self.lower_lim,self.upper_lim)
 
     # return the new control value
     return u
@@ -157,6 +190,26 @@ class Rospid:
 
   def read_integrator(self):
     return(self.integ)
+
+  # callbacks for integrators and limits
+
+  def reset_int_callback(self,data):
+    self.reset_integrator(data.data)
+
+  def upper_lim_callback(self, data):
+    if data.data>self.lower_lim:
+      self.upper_lim = data.data
+      rospy.logwarn('PID %s updated upper limit: %f', self.namespace, self.upper_lim)
+    else:
+      rospy.logwarn('PID %s ignoring upper limit', self.namespace)
+
+  def lower_lim_callback(self, data):
+    if data.data<self.upper_lim:
+      self.lower_lim = data.data
+      rospy.logwarn('PID %s updated lower limit: %f', self.namespace, self.lower_lim)
+    else:
+      rospy.logwarn('PID %s ignoring lower limit', self.namespace)
+
 
 class Quadpid:
 
@@ -200,7 +253,7 @@ class Quadpid:
       rospy.loginfo('Measurement PRYZ relative to target is [%f %f %f %f]',-trans[0], -trans[1], -rot[2], -trans[2])
       self.tf_ok = True
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-      pass
+      rospy.loginfo('Problem with transform from %s to %s',self.tf_targ_frame,self.tf_meas_frame)
 
   def pub_output(self):
     # convert to a twist and transmit
