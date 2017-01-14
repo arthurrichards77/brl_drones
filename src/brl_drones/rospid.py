@@ -230,7 +230,7 @@ class Quadpid:
     self.setup_output(ctrl_topic)
 
   def setup_output(self,ctrl_topic):
-    self.twist_pub = rospy.Publisher(ctrl_topic, Twist)
+    self.twist_pub = rospy.Publisher(ctrl_topic, Twist, queue_size=1)
 
   def update(self,t):
     # derive errors somehow - override this for different approaches

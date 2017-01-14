@@ -112,11 +112,11 @@ class DronePanel:
     self.reset_pub.publish(Empty())
 
   def setup_ros_pubs(self):
-    self.msg_pub = rospy.Publisher('monitor/status_msg',String)
-    self.vel_pub = rospy.Publisher('cmd_vel',Twist)
-    self.land_pub = rospy.Publisher('ardrone/land', Empty)
-    self.reset_pub = rospy.Publisher('ardrone/reset', Empty)
-    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty)
+    self.msg_pub = rospy.Publisher('monitor/status_msg',String,queue_size=1)
+    self.vel_pub = rospy.Publisher('cmd_vel',Twist,queue_size=1)
+    self.land_pub = rospy.Publisher('ardrone/land', Empty,queue_size=1)
+    self.reset_pub = rospy.Publisher('ardrone/reset', Empty,queue_size=1)
+    self.takeoff_pub = rospy.Publisher('ardrone/takeoff', Empty,queue_size=1)
 
   def setup_ros_subs(self):
     self.ext_sub = rospy.Subscriber('ext_vel', Twist, self.ext_callback)

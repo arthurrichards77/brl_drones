@@ -81,14 +81,14 @@ class App:
     self.rs_entry.bind("<Return>", self.update_rs)    
     
     # gain publishers
-    self.kp_pub = rospy.Publisher('tune_gains/kp',Float32)
-    self.ki_pub = rospy.Publisher('tune_gains/ki',Float32)
-    self.kd_pub = rospy.Publisher('tune_gains/kd',Float32)
+    self.kp_pub = rospy.Publisher('tune_gains/kp',Float32,queue_size=1)
+    self.ki_pub = rospy.Publisher('tune_gains/ki',Float32,queue_size=1)
+    self.kd_pub = rospy.Publisher('tune_gains/kd',Float32,queue_size=1)
 
     # limit and int publishers
-    self.up_pub = rospy.Publisher('set_limits/upper',Float32)
-    self.lo_pub = rospy.Publisher('set_limits/lower',Float32)
-    self.rs_pub = rospy.Publisher('reset_integrator',Float32)
+    self.up_pub = rospy.Publisher('set_limits/upper',Float32,queue_size=1)
+    self.lo_pub = rospy.Publisher('set_limits/lower',Float32,queue_size=1)
+    self.rs_pub = rospy.Publisher('reset_integrator',Float32,queue_size=1)
 
   def check_ros(self):
     if rospy.is_shutdown():

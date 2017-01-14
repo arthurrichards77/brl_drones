@@ -15,7 +15,7 @@ class TrajGui:
     frame.pack()
     self.my_frame = frame
     self.traj = None
-    self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory)
+    self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory, queue_size=1)
     self.repeat_traj = False
 
     # initial directory to look for files
