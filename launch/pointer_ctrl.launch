@@ -1,0 +1,17 @@
+<launch>	
+
+  <include file="$(find vicon_bridge)/launch/vicon.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find brl_drones)/urdf/drones.rviz"/>
+
+  <param name="static_frame" value="world" />
+
+  <param name="pointer_frame" value="pointer" />
+
+  <param name="drone_frame" value="vicon/Archie/Archie" />
+
+  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 -0.707 0.707 vicon/ActiveWandCopy/Root pointer 100" />
+
+  <node name="pointer_control" pkg="brl_drones" type="pointer_ctrl.py" output="screen" />
+
+</launch>

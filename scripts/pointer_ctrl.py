@@ -4,32 +4,55 @@ roslib.load_manifest('brl_drones')
 import rospy
 import tf
 import numpy
+from math import sqrt
 
-# update rate and time step
-rospy.init_node('pointer_ctrl', anonymous=True)
-rate = rospy.Rate(10)
+class PointerCtrl:
 
-listener = tf.TransformListener()
-br = tf.TransformBroadcaster()
+  def __init__(self):
+    rospy.init_node('pointer_ctrl', anonymous=True)
+    self.rate = rospy.Rate(10)
+    self.listener = tf.TransformListener()
+    self.br = tf.TransformBroadcaster()
+    self.connected = False
+    self.targ_trans = (0,0,1)
+    self.targ_rot = (0,0,0,1)
+    self.pointer_distance = 3.0
+    # frame names
+    self.static_frame = rospy.get_param('static_frame','world')
+    self.pointer_frame = rospy.get_param('pointer_frame','pointer')
+    self.target_frame = rospy.get_param('target_frame','target')
+    self.drone_frame = rospy.get_param('drone_frame','drone')
 
-targ_trans = (0,0,1)
-targ_rot = (0,0,0,1)
-
-while not rospy.is_shutdown():
-  try:
-    (trans,rot) = listener.lookupTransform('base_link', 'xyzrqp', rospy.Time(0))
-    M44 = tf.transformations.quaternion_matrix(rot)
-    M33 = M44[:3,:3]
-    targ_trans = numpy.add(trans,numpy.dot(M33,(3,0,0)))
-    print targ_trans
-    #euls = tf.transformations.euler_from_quaternion(rot)
-    #print euls
-  except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-    print 'problem'
-  br.sendTransform(targ_trans,
-                     targ_rot,
-                     rospy.Time.now(),
-                     "target",
-                     "base_link")
-  rate.sleep()
+  def run(self):
+    while not rospy.is_shutdown():
+      try:
+        (trans,rot) = self.listener.lookupTransform(self.pointer_frame, self.drone_frame, rospy.Time(0))
+        offset_tan = sqrt(trans[2]*trans[2] + trans[1]*trans[1])/trans[0]        
+        if trans[0]>0 and offset_tan < 0.05:
+          if self.connected==False:
+            self.pointer_distance = trans[0]
+            self.connected = True
+            rospy.loginfo('CONNECTED!!')
+        else:
+          pass
+        if self.connected == True:
+          (trans,rot) = self.listener.lookupTransform(self.static_frame, self.pointer_frame, rospy.Time(0))
+          M44 = tf.transformations.quaternion_matrix(rot)
+          M33 = M44[:3,:3]
+          if M33[1,2]*M33[1,2]>0.4:
+            self.connected = False
+            rospy.loginfo('DISCONNECTED!!')
+          else:
+            self.targ_trans = numpy.add(trans,numpy.dot(M33,(self.pointer_distance,0,0)))
+      except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print 'problem'
+      self.br.sendTransform(self.targ_trans,
+                            self.targ_rot,
+                            rospy.Time.now(),
+                            self.target_frame,
+                            self.static_frame)
+      self.rate.sleep()
   
+pc = PointerCtrl()
+pc.run()
+
