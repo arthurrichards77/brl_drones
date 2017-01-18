@@ -16,6 +16,7 @@ class TrajGui:
     self.my_frame = frame
     self.traj = None
     self.pub_traj = rospy.Publisher('cmd_traj', JointTrajectory, queue_size=1)
+    self.sub_traj = rospy.Subscriber('inp_traj', JointTrajectory, self.traj_callback)
     self.repeat_traj = False
 
     # initial directory to look for files
@@ -35,6 +36,10 @@ class TrajGui:
     # quit button
     self.quit_button = Button(frame, text="Quit", command=frame.quit)
     self.quit_button.grid(row=0, column=2, padx=10, pady=10)
+
+  def traj_callback(self,data):
+    self.traj = data
+    rospy.loginfo("Trajectory received")    
 
   def load_csv_traj(self,file_name):
     # prepare empty trajectory
