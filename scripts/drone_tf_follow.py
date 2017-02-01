@@ -13,7 +13,10 @@ rospy.init_node('drone_control')
 # control drone2 to follow drone 1
 quad_pid = brl_drones.rospid.Quadpid(ctrl_drone_frame, targ_drone_frame, ctrl_topic='ctrl_vel')
 
-rate = rospy.Rate(10)
+update_freq = rospy.get_param('update_frequency',10.0)
+    
+rate = rospy.Rate(update_freq)
+
 while not rospy.is_shutdown():
   quad_pid.update(rospy.get_rostime().to_sec())
   rate.sleep()

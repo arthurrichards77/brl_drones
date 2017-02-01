@@ -27,7 +27,8 @@ class PointerCtrl:
     while not rospy.is_shutdown():
       try:
         (trans,rot) = self.listener.lookupTransform(self.pointer_frame, self.drone_frame, rospy.Time(0))
-        offset_tan = sqrt(trans[2]*trans[2] + trans[1]*trans[1])/trans[0]        
+        offset_tan = sqrt(trans[2]*trans[2] + trans[1]*trans[1])/trans[0]
+        print offset_tan     
         if trans[0]>0 and offset_tan < 0.05:
           if self.connected==False:
             self.pointer_distance = trans[0]
@@ -39,7 +40,7 @@ class PointerCtrl:
           (trans,rot) = self.listener.lookupTransform(self.static_frame, self.pointer_frame, rospy.Time(0))
           M44 = tf.transformations.quaternion_matrix(rot)
           M33 = M44[:3,:3]
-          if M33[1,2]*M33[1,2]>0.4:
+          if M33[2,1]*M33[2,1]>0.4:
             self.connected = False
             rospy.loginfo('DISCONNECTED!!')
           else:

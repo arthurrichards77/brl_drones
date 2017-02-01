@@ -6,12 +6,25 @@
 
   <param name="static_frame" value="world" />
 
-  <param name="pointer_frame" value="pointer" />
+  <param name="pointer_frame" value="vicon/WoodPointer/WoodPointer" />
 
   <param name="drone_frame" value="vicon/Archie/Archie" />
 
-  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 -0.707 0.707 vicon/ActiveWandCopy/Root pointer 100" />
-
   <node name="pointer_control" pkg="brl_drones" type="pointer_ctrl.py" output="screen" />
+
+    <arg name="tuning" default="false" />
+    <node pkg="brl_drones" if="$(arg tuning)" name="tuning" type="pid_tune_gui.py" ns="control/pitch" />
+    <node pkg="brl_drones" if="$(arg tuning)" name="tuning" type="pid_tune_gui.py" ns="control/roll" />
+    <node pkg="brl_drones" if="$(arg tuning)" name="tuning" type="pid_tune_gui.py" ns="control/yaw" />
+    <node pkg="brl_drones" if="$(arg tuning)" name="tuning" type="pid_tune_gui.py" ns="control/height" />
+
+  <include file="$(find brl_parrots)/launch/parrot_follow_tf.launch">
+    <arg name="panel" value="True" />
+    <arg name="image" value="False" />
+    <arg name="drone_name" value="archie" />
+    <arg name="drone_ip" value="192.168.10.71" />
+    <arg name="drone_frame" default="/vicon/Archie/Archie" />
+    <arg name="target_frame" default="target" />
+  </include>
 
 </launch>
