@@ -46,7 +46,7 @@ class PointerCtrl:
           else:
             self.targ_trans = numpy.add(trans,numpy.dot(M33,(self.pointer_distance,0,0)))
       except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        print 'problem'
+        print "Cannot find transform from %s to %s" % (self.pointer_frame,self.drone_frame)
       self.br.sendTransform(self.targ_trans,
                             self.targ_rot,
                             rospy.Time.now(),

@@ -1,16 +1,21 @@
 <launch>
 
-  <arg name="drone_name" default="drone" />
+  <arg name="drone_name" default="virtual" />
   <arg name="use_panel" default="true" />
 
-  <group ns="$(arg drone_name)">
+  <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 1 world base_link 100" />
 
-    <param name="drone_name" value="$(arg drone_name)"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find brl_drones)/urdf/single_drone.urdf.xacro'" />
 
-    <node name="targetsim" pkg="brl_drones" type="virtual_drone.py" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 
-    <node if="$(arg use_panel)" name="controlpanel" pkg="brl_drones" type="drone_panel.py" />
+  <param name="drone_name" value="$(arg drone_name)"/>
 
-  </group>
+  <node name="virtual_drone" pkg="brl_drones" type="virtual_drone.py" />
+
+  <node if="$(arg use_panel)" name="controlpanel" pkg="brl_drones" type="drone_panel.py" />
+
+  <param name="default_trajectory_folder"  value="$(find brl_drones)/launch" />
+  <node name="traj_gui" pkg="brl_drones" type="csv_trajectory_gui.py" />
 
 </launch>
