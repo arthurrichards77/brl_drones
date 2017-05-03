@@ -35,7 +35,7 @@ class PointerCtrl:
             self.pointer_distance = trans[0]
             self.connected = True
             rospy.loginfo('CONNECTED!!')
-            os.system('paplay /usr/share/sounds/freedesktop/stereo/complete.oga')
+            os.system('paplay /usr/share/sounds/ubuntu/stereo/phone-incoming-call.ogg')
         else:
           pass
         if self.connected == True:
