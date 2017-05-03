@@ -5,6 +5,7 @@ import rospy
 import tf
 import numpy
 from math import sqrt
+import os
 
 class PointerCtrl:
 
@@ -34,6 +35,7 @@ class PointerCtrl:
             self.pointer_distance = trans[0]
             self.connected = True
             rospy.loginfo('CONNECTED!!')
+            os.system('paplay /usr/share/sounds/freedesktop/stereo/complete.oga')
         else:
           pass
         if self.connected == True:
@@ -43,6 +45,7 @@ class PointerCtrl:
           if M33[2,1]*M33[2,1]>0.4:
             self.connected = False
             rospy.loginfo('DISCONNECTED!!')
+            os.system('paplay /usr/share/sounds/freedesktop/stereo/bell.oga')
           else:
             self.targ_trans = numpy.add(trans,numpy.dot(M33,(self.pointer_distance,0,0)))
       except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
