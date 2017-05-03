@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /RobotModel1/Links1
       Splitter Ratio: 0.5
     Tree Height: 565
   - Class: rviz/Selection
@@ -55,13 +54,11 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        pointer:
-          Value: true
         target:
           Value: true
-        vicon/ActiveWandCopy/Root:
+        vicon/QAV_GREEN/QAV_GREEN:
           Value: true
-        vicon/Archie/Archie:
+        vicon/WoodenWand/WoodenWand:
           Value: true
         world:
           Value: true
@@ -74,29 +71,12 @@ Visualization Manager:
         world:
           target:
             {}
-          vicon/ActiveWandCopy/Root:
-            pointer:
-              {}
-          vicon/Archie/Archie:
+          vicon/QAV_GREEN/QAV_GREEN:
+            {}
+          vicon/WoodenWand/WoodenWand:
             {}
       Update Interval: 0
       Value: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-      Name: RobotModel
-      Robot Description: robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -120,7 +100,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.30508
+      Distance: 7.2209
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -154,4 +134,4 @@ Window Geometry:
     collapsed: false
   Width: 1200
   X: 55
-  Y: 50
+  Y: 40
