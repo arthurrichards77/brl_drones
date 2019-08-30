@@ -107,9 +107,11 @@ class DronePanel:
 
   def land_callback(self):
     self.land_pub.publish(Empty())
+    self.stop_auto()
 
   def reset_callback(self):
     self.reset_pub.publish(Empty())
+    self.stop_auto()
 
   def setup_ros_pubs(self):
     self.msg_pub = rospy.Publisher('monitor/status_msg',String,queue_size=1)
